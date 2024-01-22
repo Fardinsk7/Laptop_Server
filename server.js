@@ -20,6 +20,7 @@ app.post("/admin/uploadProducts",require("./routes/products"));
 app.get("/admin/getallProduct",require("./routes/products"));
 app.get("/admin/:id",require("./routes/products"));
 app.delete("/delete/:id",require("./routes/products"));
+app.post("/createCheckoutSession",require("./routes/products"));
 
 //User Authentication
 app.post("/signup",require("./routes/auth"));

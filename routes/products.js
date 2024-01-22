@@ -1,6 +1,7 @@
 const express = require("express");
 const router = express.Router();
 const ProductModel = require('../models/Products')
+const stripe = require("stripe")(process.env.STRIPE_KEY);
 
 
 //Uploading Products to database
@@ -77,6 +78,36 @@ router.delete("/delete/:id",async(req,res)=>{
         console.log(error);
         res.status(500).json({message:"Server Error"})
     }
+})
+
+
+//Stripe route
+router.post("/createCheckoutSession", async(req,res)=>{
+    const{products} = req.body;
+    const lineItems = products.map((product)=>({
+        price_data:{
+            currency:"inr",
+            product_data:{
+                name: product.name,
+                images:[product.image]
+            },
+            unit_amount: Math.round(product.price*100)
+        },
+        quantity: product.amount
+    }));
+
+    const session = await stripe.checkout.sessions.create({
+        payment_method_types:["card"],
+        line_items: lineItems,
+        mode:"payment",
+        success_url:"https://caymanlaptops.netlify.app/paymentSuccess",
+        cancel_url:"https://caymanlaptops.netlify.app/paymentFail",
+        shipping_address_collection: {
+            allowed_countries: ['US', 'CA', 'GB', 'AU', 'IN'], // Add the two-letter country code for India
+        },
+    })
+    res.json({id:session.id})
+    
 })
 
 
