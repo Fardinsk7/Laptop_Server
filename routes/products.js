@@ -84,6 +84,7 @@ router.delete("/delete/:id",async(req,res)=>{
 //Stripe route
 router.post("/createCheckoutSession", async(req,res)=>{
     const{products} = req.body;
+    console.log("Hello Stripe");
     const lineItems = products.map((product)=>({
         price_data:{
             currency:"inr",
